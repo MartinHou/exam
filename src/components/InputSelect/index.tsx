@@ -1,7 +1,8 @@
 import Downshift from "downshift"
-import {useCallback, useEffect, useRef, useState} from "react"
+import {useCallback, useEffect, useState} from "react"
 import classNames from "classnames"
 import { DropdownPosition, GetDropdownPositionFn, InputSelectOnChange, InputSelectProps } from "./types"
+import {EMPTY_EMPLOYEE} from "../../utils/constants";
 
 export function InputSelect<TItem>({
   label,
@@ -36,8 +37,12 @@ export function InputSelect<TItem>({
       if (selectedItem === null) {
         return
       }
-
-      consumerOnChange(selectedItem)
+      if (selectedItem===EMPTY_EMPLOYEE){
+        consumerOnChange(EMPTY_EMPLOYEE as TItem);
+      }
+      else{
+        consumerOnChange(selectedItem)
+      }
       setSelectedValue(selectedItem)
     },
     [consumerOnChange]
