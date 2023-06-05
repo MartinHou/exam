@@ -1,7 +1,7 @@
-import { useCallback, useContext } from "react"
-import { AppContext } from "../utils/context"
-import { fakeFetch, RegisteredEndpoints } from "../utils/fetch"
-import { useWrappedRequest } from "./useWrappedRequest"
+import {useCallback, useContext} from "react"
+import {AppContext} from "../utils/context"
+import {fakeFetch, RegisteredEndpoints} from "../utils/fetch"
+import {useWrappedRequest} from "./useWrappedRequest"
 
 export function useCustomFetch() {
   const { cache } = useContext(AppContext)
@@ -34,12 +34,19 @@ export function useCustomFetch() {
       params?: TParams
     ): Promise<TData | null> =>
       wrappedRequest<TData>(async () => {
-        const result = await fakeFetch<TData>(endpoint, params)
-        return result
+        return await fakeFetch<TData>(endpoint, params)
       }),
     [wrappedRequest]
   )
-
+  
+  const clearCacheByParams = useCallback(<TParams extends object = object>(
+    endpoint:RegisteredEndpoints, params?: TParams
+  ) => {
+    if (cache?.current === undefined) return
+    const cacheKey = getCacheKey(endpoint,params)
+    if (cacheKey) cache.current.delete(cacheKey)
+  },[cache])
+  
   const clearCache = useCallback(() => {
     if (cache?.current === undefined) {
       return
@@ -67,7 +74,7 @@ export function useCustomFetch() {
     [cache]
   )
 
-  return { fetchWithCache, fetchWithoutCache, clearCache, clearCacheByEndpoint, loading }
+  return { fetchWithCache, fetchWithoutCache, clearCacheByParams, clearCache, clearCacheByEndpoint, loading }
 }
 
 function getCacheKey(endpoint: RegisteredEndpoints, params?: object) {
