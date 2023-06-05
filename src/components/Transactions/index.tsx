@@ -18,7 +18,7 @@ export const Transactions: TransactionsComponent = ({ transactions }) => {
       })
       clearCacheByEndpoint(['paginatedTransactions'])
     },
-    [fetchWithoutCache]
+    [fetchWithoutCache,clearCacheByEndpoint,clearCacheByParams]
   )
 
   if (transactions === null) {
